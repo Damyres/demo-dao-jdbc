@@ -1,16 +1,13 @@
 package impl;
-
 import db.DB;
 import db.DbException;
 import entities.Departamento;
 import entities.Vendedor;
 import model.dao.VendedorDao;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 public class VendedorDaoJDBC implements VendedorDao {
@@ -42,10 +39,22 @@ public class VendedorDaoJDBC implements VendedorDao {
         ResultSet rs = null;
         try {
             st = conn.prepareStatement(
-                    "select  NOME, EMAIL "
-                            + "from VENDEDOR "
-                            + " WHERE ID = ? ");
+                    "SELECT " +
+                            " V.ID AS VENDEDOR_ID, " +
+                            " V.NOME AS VENDEDOR, " +
+                            " V.EMAIL AS EMAIL, " +
+                            " V.DATA AS DATA, " +
+                            " V.SALARIO_BASE AS SALARIO, " +
+                            " D.ID AS DEPARTAMENTO_ID, " +
+                            " D.NOME AS DEPARTAMENTO " +
+                            " FROM VENDEDOR V " +
+                            " INNER JOIN DEPARTAMENTO D ON V.DEPARTAMENTO_ID = D.ID " +
+                            " WHERE V.ID = ? "
+);
 
+//            "select  NOME, EMAIL "
+//                    + "from VENDEDOR "
+//                    + " WHERE ID = ? "
 
 
             st.setInt(1, id);
@@ -53,11 +62,16 @@ public class VendedorDaoJDBC implements VendedorDao {
             if (rs.next()) {
                 Departamento departamento = new Departamento();
                 departamento.setId(rs.getInt("DEPARTAMENTO_ID"));
-                departamento.setNome(rs.getString("NOME"));
-                Vendedor obj = new Vendedor();
-                obj.setId(rs.getInt("ID"));
-                obj.setNome(rs.getString("NOME"));
-                obj.setEmail(rs.getString("EMAIL"));
+                departamento.setNome(rs.getString("DEPARTAMENTO"));
+
+                Vendedor vendedor = new Vendedor();
+                vendedor.setId(rs.getInt("VENDEDOR_ID"));
+                vendedor.setNome(rs.getString("VENDEDOR"));
+                vendedor.setEmail(rs.getString("EMAIL"));
+                vendedor.setSalarioBase(rs.getDouble("SALARIO"));
+                vendedor.setData(rs.getDate("DATA"));
+                vendedor.setDepartamento(departamento);
+                return vendedor;
             }
             return null;
 

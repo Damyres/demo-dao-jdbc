@@ -19,6 +19,5 @@ public class Programa {
         Vendedor vendedor = vendedorDao.findById(1);
 
         System.out.println(vendedor);
-
     }
 }
