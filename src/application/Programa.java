@@ -15,8 +15,9 @@ public class Programa {
 //                new Date(), 3000.00, obj);
 
         VendedorDao vendedorDao = DaoFabrica.createVendedorDao();
+        System.out.println("=== Teste 1: Vendedor findById ===");
 
-        Vendedor vendedor = vendedorDao.findById(1);
+        Vendedor vendedor = vendedorDao.findById(2);
 
         System.out.println(vendedor);
     }

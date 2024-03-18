@@ -1,9 +1,11 @@
 package impl;
+
 import db.DB;
 import db.DbException;
 import entities.Departamento;
 import entities.Vendedor;
 import model.dao.VendedorDao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,7 +52,7 @@ public class VendedorDaoJDBC implements VendedorDao {
                             " FROM VENDEDOR V " +
                             " INNER JOIN DEPARTAMENTO D ON V.DEPARTAMENTO_ID = D.ID " +
                             " WHERE V.ID = ? "
-);
+            );
 
 //            "select  NOME, EMAIL "
 //                    + "from VENDEDOR "
@@ -60,17 +62,8 @@ public class VendedorDaoJDBC implements VendedorDao {
             st.setInt(1, id);
             rs = st.executeQuery();
             if (rs.next()) {
-                Departamento departamento = new Departamento();
-                departamento.setId(rs.getInt("DEPARTAMENTO_ID"));
-                departamento.setNome(rs.getString("DEPARTAMENTO"));
-
-                Vendedor vendedor = new Vendedor();
-                vendedor.setId(rs.getInt("VENDEDOR_ID"));
-                vendedor.setNome(rs.getString("VENDEDOR"));
-                vendedor.setEmail(rs.getString("EMAIL"));
-                vendedor.setSalarioBase(rs.getDouble("SALARIO"));
-                vendedor.setData(rs.getDate("DATA"));
-                vendedor.setDepartamento(departamento);
+                Departamento dep = intanciaDepartamento(rs);
+                Vendedor vendedor = instanciaVendedor(rs, dep);
                 return vendedor;
             }
             return null;
@@ -81,6 +74,24 @@ public class VendedorDaoJDBC implements VendedorDao {
             DB.closeStatemaint(st);
             DB.closeResultSet(rs);
         }
+    }
+
+    private Departamento intanciaDepartamento(ResultSet rs) throws SQLException {
+        Departamento dep = new Departamento();
+        dep.setId(rs.getInt("DEPARTAMENTO_ID"));
+        dep.setNome(rs.getString("DEPARTAMENTO"));
+        return dep;
+    }
+
+    private Vendedor instanciaVendedor(ResultSet rs, Departamento dep) throws SQLException {
+        Vendedor vend = new Vendedor();
+        vend.setId(rs.getInt("VENDEDOR_ID"));
+        vend.setNome(rs.getString("VENDEDOR"));
+        vend.setEmail(rs.getString("EMAIL"));
+        vend.setSalarioBase(rs.getDouble("SALARIO"));
+        vend.setData(rs.getDate("DATA"));
+        vend.setDepartamento(dep);
+        return vend;
     }
 
     @Override
